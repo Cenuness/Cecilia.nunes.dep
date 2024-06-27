@@ -1,0 +1,461 @@
+/*Aluno: Cecília Ferreira Nunes 241024553
+Professor: Wesin Alves
+Matéria: Computação para Engenharia
+Turma: 1*/
+
+//LISTA REGISTROS
+
+//QUESTÃO 1
+
+#include <iostream>
+#include <cstring>
+#include <unistd.h>
+#include <ctype.h>
+
+using namespace std;
+const int iTam = 3;
+int iQtdRegistros = 0;
+
+struct Categoria{
+    int    iCodCategoria;
+    string sNomeCategoria;
+};
+
+struct Setor{
+    string sSetor;
+};
+
+struct Localizacao{
+    int    iCodLocal;
+    string sNomeLocal;
+};
+
+struct CadRamal{
+   int         iNumRamal;  
+   Categoria   VarCategoria;
+   Setor       VarSetor;   
+   Localizacao VarLocal;    
+   string      sSalaRamal; 
+   string      sRespRamal;  
+   string      sRespAteste; 
+};
+      
+void CadastroDeRamais(CadRamal *Ramal, CadRamal *pVetor); 
+
+bool VerificaRamal(CadRamal *pVetor, int &pAux);
+
+void ImprimirCadastroDeRamais(CadRamal *pVetor);
+
+int main(){
+    
+    CadRamal VarCadRamal;
+ 
+    CadRamal iVetor[5];
+    
+    CadRamal *pPonte;
+
+    pPonte = &VarCadRamal;
+        
+    if (iQtdRegistros == iTam){
+        cout << "\n=======================================================";                
+        cout << "\n Usuario, nao ha espaco livre para novos cadastros!..";
+        cout << "\n=======================================================";
+        sleep(4);
+        return 0;
+    }
+
+    //vou entrar com os dados na estrutura
+    for (int i = 0; i < iTam; i++){
+    	
+        CadastroDeRamais(pPonte, &iVetor[i]);
+        iVetor[i] = VarCadRamal;
+        iQtdRegistros += 1;
+    }
+
+    for (int i = 0; i < iTam; i++){
+       
+        cout << "\n==============================================================";
+        cout << "\nIMPRESSAO DO CADASTRO DE RAMAIS DO MINISTERIO DO MEIO AMBIENTE";
+        cout << "\n==============================================================\n";
+        
+        ImprimirCadastroDeRamais(&iVetor[i]);
+    }
+    
+    return 0;
+}
+
+//Funcao cadastro
+void CadastroDeRamais(CadRamal *pRamal, CadRamal *pVetor){
+
+    cout << "\n=================================================";
+    cout << "\nCADASTRO DE RAMAIS DO MINISTERIO DO MEIO AMBIENTE";
+    cout << "\n=================================================\n";
+
+    int iAux = 0;
+
+    do{
+        cout << "\nInforme o numero do Ramal entre 1000 e 3000: ";
+        cin  >> iAux;
+        
+        //primeira crÃ­tica 
+        if (iAux < 999 || iAux > 2999){
+           cout << "\numero do Ramal fora do intervalo estabelecido, tente novamente.";
+           sleep(2);
+        }
+
+        pVetor = pRamal;
+       
+        if (!VerificaRamal(pVetor, iAux)){
+           cout << "\nNumero do Ramal ja esta em uso, tente novamente.";
+           sleep(1);
+           iAux = -1;
+        }
+
+        if (iAux != -1){
+           pRamal->iNumRamal = iAux;
+        }
+        
+    }while(iAux < 999 || iAux > 2999);
+
+    do{
+        cout << "\nInforme a Categoria entre 0 e 6: ";
+        cin  >> pRamal->VarCategoria.iCodCategoria;
+        cin.ignore();
+        
+        if (pRamal->VarCategoria.iCodCategoria < 0 || 
+            pRamal->VarCategoria.iCodCategoria > 6){
+           cout << "\n Categoria fora do intervalo estabelecido, tente novamente";
+           sleep(2);
+        }
+        
+    }while(pRamal->VarCategoria.iCodCategoria < 0 || 
+           pRamal->VarCategoria.iCodCategoria > 6);
+
+
+    do{
+        cout << "\nInforme o Setor (SETEL, DIBEN, PATRIMÔNIO, PROTOCOLO...): ";
+        getline(cin, pRamal->VarSetor.sSetor);
+        
+    }while(pRamal->VarSetor.sSetor == " ");
+   
+    do{
+
+        cout << "\nInforme a Localizacao 500 ou 505 = ";
+        cin  >> pRamal->VarLocal.iCodLocal;
+        cin.ignore();
+        
+        
+        if (pRamal->VarLocal.iCodLocal != 500 && pRamal->VarLocal.iCodLocal != 505){
+           cout << "\nCodigo da Localizacao diferente de 500 ou 505\n";
+           sleep(2);
+        }
+        
+    }while(pRamal->VarLocal.iCodLocal != 500 && pRamal->VarLocal.iCodLocal != 505);
+    
+ 
+    do{
+        cout << "\nInforme o numero da sala = ";
+        getline(cin, pRamal->sSalaRamal);
+
+
+        if (pRamal->sSalaRamal == " "){
+           cout << "\numero da sala deve ser preenchido\n";
+           sleep(2);
+        }
+        
+    }while(pRamal->sSalaRamal == " ");
+
+    do{
+        cout << "\nInforme o nome do Responsavel pelo Ramal = ";
+        getline(cin, pRamal->sRespRamal);
+
+        //sexta crÃ­tica 
+        if (pRamal->sRespRamal == " "){
+           cout << "\nO nome do Responsavel pelo Ramal deve ser preenchido\n";
+           sleep(2);
+        }
+        
+    }while(pRamal->sRespRamal == " ");
+    
+
+    do{
+        cout << "\nInforme o nome do Responsavel pelo teste = ";
+        getline(cin, pRamal->sRespAteste);
+		 
+        if (pRamal->sRespAteste == " "){
+           cout << "\nO nome do Responsavel pelo teste deve ser preenchido\n";
+           sleep(2);
+        }
+        
+    }while(pRamal->sRespAteste == " ");
+   
+    return;
+}
+
+bool VerificaRamal(CadRamal *pVetor, int &pAux){
+
+    for (int i = 0; i < iTam; i++){  
+        if (pVetor[i].iNumRamal == pAux){
+           return false;
+        }
+    }
+
+    return true; 
+    
+}
+
+void ImprimirCadastroDeRamais(CadRamal *pVetor){
+    
+    cout << "\nRamal                  : " << pVetor->iNumRamal;
+    cout << "\nCategoria              : " << pVetor->VarCategoria.iCodCategoria
+         << " - ";
+    cout << pVetor->VarCategoria.sNomeCategoria;
+    cout << "\nSetor                  : " << pVetor->VarSetor.sSetor;
+    cout << "\nEdificio               : " << pVetor->VarLocal.iCodLocal
+         << " - ";
+    cout << pVetor->VarLocal.sNomeLocal;
+    cout << "\nSala                   : " << pVetor->sSalaRamal;
+    cout << "\nResponsavel pelo Ramal : " << pVetor->sRespRamal;
+    cout << "\nResponsavel pelo teste: " << pVetor->sRespAteste;
+    cout << "\n==============================================================\n";
+    
+    sleep(2);
+    
+    return; 
+
+}
+
+//QUESTÃO 2
+
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+
+// Definindo o struct base para o codigo
+struct RamalRegistro {
+    int numero;
+    int categoria;
+    string setor;
+    int edificio;
+    string sala;
+    string respRamal;
+    string respAteste;
+    
+    RamalRegistro(int num, int categ, const string& set, int edf, const string& sal, const string& respR, const string& respA)
+        : numero(num), categoria(categ), setor(set), edificio(edf), sala(sal), respRamal(respR), respAteste(respA) {}
+};
+
+
+//funcoes exemplos para serem impressas na pesquisa
+void RamalPesquisa(const vector<RamalRegistro>& ramais);
+
+int main() {
+    vector<RamalRegistro> vRamais;
+    
+    RamalRegistro R1(1045, 1, "SETEL:", 500, "Sala 246", "Carla", "Maria");
+    vRamais.push_back(R1);
+    
+    RamalRegistro R2(35324, 3, "DIBEN:", 505, "Sala 4457", "Thabata", "Joao");
+    vRamais.push_back(R2);
+    
+    RamalRegistro R3(1055, 3, "PATRIMONIO.", 500, "Sala 176", "Mara", "John");
+    vRamais.push_back(R3);
+    
+    RamalRegistro R4(2223, 6, "PROTOCOLO.", 500, "Sala 7236", "Ricardo", "Tiana");
+    vRamais.push_back(R4);
+    
+    RamalRegistro R5(1111, 2, "PATRIMONIO.", 505, "Sala 245", "Leonardo", "Ana");
+    vRamais.push_back(R5);
+    
+    RamalPesquisa(vRamais);
+    
+    cout<<endl;
+    return 0;
+}
+ 
+
+//menu inicial
+void RamalPesquisa(const vector<RamalRegistro>& ramais) {
+    int opcao;
+
+    cout << "\n====================" <<endl;
+    cout << "PESQUISA DE RAMAIS" <<endl;
+    cout << "\n====================" << endl;
+    cout << "PRESSIONE 0 para: numero do ramal." << endl;
+    cout << "PRESSIONE 1 para: setor." << endl;
+    cout << "PRESSIONE 2 para: edificio." << endl;
+    cout << "PRESSIONE 3 para: responsavel pelo ramal." << endl;
+    cout << "PRESSIONE 4 para: responsavel pelo ateste." << endl;
+    cout<<endl;
+    cout << "=====================" << endl;
+    cout << "INFORME A OPCAO DESEJADA: " << endl;
+    cout << "\n=======================" << endl;
+    cin >> opcao;
+    cout<<endl;
+
+
+    switch (opcao) {
+        case 0: {
+            int numRamalPesquisa;
+            cout << "Lista de Ramais: " << endl;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                cout << "Ramal " << it->numero << endl;
+            }
+            cout << "Digite o numero do ramal a ser pesquisado: ";
+            cin >> numRamalPesquisa;
+            
+            bool encontrado = false;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                if (it->numero == numRamalPesquisa) {
+                    cout << "Ramal encontrado: " << endl;
+                    cout << "Numero do ramal: " << it->numero << endl;
+                    cout << "Categoria: " << it->categoria << endl;
+                    cout << "Setor: " << it->setor << endl;
+                    cout << "Edificio: " << it->edificio << endl;
+                    cout << "Sala: " << it->sala << endl;
+                    cout << "Responsavel pelo ramal: " << it->respRamal << endl;
+                    cout << "Responsavel pelo ateste: " << it->respAteste << endl;
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (!encontrado) {
+                cout << "Ramal nao encontrado, por favor tente outro." << endl;
+            }
+            break;
+        }
+        cout<<endl;
+        
+        
+        case 1: {
+            string setorPesquisa;
+            cout << "Lista de Setores: " << endl;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                cout << " - " << it->setor  << endl;
+            }
+            cout<<endl;
+            cout << "Insira o nome do setor a ser pesquisado: ";
+            cin >> setorPesquisa;
+            
+            bool encontrado = false;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                if (it->setor == setorPesquisa) {
+                    cout << "Ramal: " << endl;
+                    cout << "Numero do ramal: " << it->numero << endl;
+                    cout << "Categoria: " << it->categoria << endl;
+                    cout << "Setor: " << it->setor << endl;
+                    cout << "Edificio: " << it->edificio << endl;
+                    cout << "Sala: " << it->sala << endl;
+                    cout << "Responsavel pelo ramal: " << it->respRamal << endl;
+                    cout << "Responsavel pelo ateste: " << it->respAteste << endl;
+                    encontrado = true;
+                }
+            }
+            if (!encontrado) {
+                cout << "Nao foi encontrado nenhum ramal para o setor informado." << endl;
+            }
+            break;
+        }
+        cout<<endl;
+        
+        
+        case 2: {
+            int edificioPesquisa;
+            cout << "Lista de Edificios: " << endl;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                cout << " - Edificio " << it->edificio << endl;
+            }
+            cout<<endl;
+            cout << "Insira o edificio a ser pesquisado: ";
+            cin >> edificioPesquisa;
+            
+            bool encontrado = false;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                if (it->edificio == edificioPesquisa) {
+                    cout << "Ramal encontrado: " << endl;
+                    cout << "Numero: " << it->numero << endl;
+                    cout << "Categoria: " << it->categoria << endl;
+                    cout << "Setor: " << it->setor << endl;
+                    cout << "Edificio: " << it->edificio << endl;
+                    cout << "Sala: " << it->sala << endl;
+                    cout << "Responsavel pelo ramal: " << it->respRamal << endl;
+                    cout << "Responsavel pelo ateste: " << it->respAteste << endl;
+                    encontrado = true;
+                }
+            }
+            if (!encontrado) {
+                cout << "Nao foi encontrado nenhum ramal para esse edificio" << endl;
+            }
+            break;
+        }
+        cout<<endl;
+        
+        
+        case 3: {
+            string respRamalPesquisa;
+            cout << "Lista de Responsaveis pelos Ramais: " << endl;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                cout << it->respRamal << endl;
+            }
+            cout << "Insira o nome do responsavel pelo ramal a ser pesquisado: ";
+            cin >> respRamalPesquisa;
+            cout<<endl;
+            
+            bool encontrado = false;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                if (it->respRamal == respRamalPesquisa) {
+                    cout << "Ramal: " << endl;
+                    cout << "Numero do ramal: " << it->numero << endl;
+                    cout << "Categoria: " << it->categoria << endl;
+                    cout << "Setor: " << it->setor << endl;
+                    cout << "Edificio: " << it->edificio << endl;
+                    cout << "Sala: " << it->sala << endl;
+                    cout << "Responsavel pelo ramal: " << it->respRamal << endl;
+                    cout << "Responsavel pelo ateste: " << it->respAteste << endl;
+                    encontrado = true;
+                }
+            }
+            if (!encontrado) {
+                cout << "Nao foi encontrado nenhum ramal para o responsavel pelo ramal informado. " << endl;
+            }
+            break;
+        }
+        cout<<endl;
+        
+        
+        case 4: {
+            string respAtestePesquisa;
+            cout << "Lista de Responsaveis pelos testes: " << endl;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                cout << it->respAteste << endl;
+            }
+            cout << "Insira o nome do responsavel pelo ateste a ser pesquisado: ";
+            cin >> respAtestePesquisa;
+            cout<<endl;
+            
+            bool encontrado = false;
+            for (vector<RamalRegistro>::const_iterator it = ramais.begin(); it != ramais.end(); ++it) {
+                if (it->respAteste == respAtestePesquisa) {
+                    cout << "Ramal encontrado: " << endl;
+                    cout << "Numero : " << it->numero << endl;
+                    cout << "Categoria: " << it->categoria << endl;
+                    cout << "Setor: " << it->setor << endl;
+                    cout << "Edificio: " << it->edificio << endl;
+                    cout << "Sala: " << it->sala << endl;
+                    cout << "Responsavel pelo ramal: " << it->respRamal << endl;
+                    cout << "Responsavel pelo ateste: " << it->respAteste << endl;
+                    encontrado = true;
+                }
+            }
+            if (!encontrado) {
+                cout << "Nao foi encontrado nenhum ramal para o responsavel pelo ateste informado." << endl;
+            }
+            break;
+        }
+        default:
+            cout << "Opcao invalida." << endl;
+            break;
+    }
+}
