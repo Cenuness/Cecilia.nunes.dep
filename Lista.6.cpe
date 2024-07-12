@@ -1,1 +1,339 @@
+/*Aluno: Cecília Ferreira Nunes 241024553
+Professor: Wesin Alves
+Matéria: Computação para Engenharia
+Turma: 1*/
 
+//LISTA ARQUIVOS
+
+//QUESTÃO 1
+
+#include <iostream>
+include <fstream>
+#include <sstream>
+#include <string>
+using namespace std;
+
+const int MAX_SIZE = 100; // Tamanho máximo do vetor
+
+int main() {
+    // Abrir o arquivo 
+    ofstream arquivo;
+	arquivo.open("Vetores.txt");
+    
+    if (!arquivo.is_open()) {
+        cerr << "Não foi possível abrir o arquivo ." << endl;
+        return 1;
+    }
+    
+    //escrita das somas
+    ofstream somas;
+	somas.open("soma.txt");
+	
+    if (!somas.is_open()) {
+        cerr << "Não foi possível abrir o arquivo ." << endl;
+        return 1;
+    }
+    
+    int numVetores;
+    cout << "Quantos vetores voce deseja somar? ";
+    cin >> numVetores;
+    
+   
+    cin.ignore();
+    
+    // Loop para inserir cada vetor
+    for (int i = 0; i < numVetores; ++i) {
+        int vetor[MAX_SIZE];
+        int tamanho = 0;
+        string linha;
+        
+        cout << "Insira os valores para o vetor " << (i + 1) << " separados por espaço (pressione Enter para terminar): ";
+        getline(cin, linha);
+        
+        stringstream ss(linha);
+        int valor;
+        int soma = 0;
+        
+        // Ler os valores da linha e armazená-los no vetor
+        while (ss >> valor) {
+            if (tamanho < MAX_SIZE) {
+                vetor[tamanho++] = valor;
+                soma += valor; // Somar o valor ao total
+            } else {
+                cerr << "O vetor excedeu o tamanho máximo." << endl;
+                break;
+            }
+            
+        
+            if (ss.peek() == ' ')
+                ss.ignore();
+        }
+        
+        // Escrever o vetor no arquivo vetores.txt
+        for (int j = 0; j < tamanho; ++j) {
+            arquivo << vetor[j] << " ";
+        }
+        arquivo << endl; 
+        
+       
+        somas << soma << endl;
+    }
+    
+    // Fechar os arquivos
+    arquivo.close();
+    somas.close();
+    
+    cout << "Dados gravados nos arquivos Vetores.txt e soma.txt com sucesso." << endl;
+
+    return 0;
+}
+
+//QUESTÃO 2
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+// Função para contar o número de ocorrências de um caractere em uma linha
+int contarCaractere(const string& linha, char caractere) {
+    int contador = 0;
+    int tamanho = linha.length();
+    for (int i = 0; i < tamanho; ++i) {
+        if (linha[i] == caractere) {
+            contador++;
+        }
+    }
+    return contador;
+}
+
+int main() {
+    string nomeArquivo = "mochileiro.txt";
+    char caractere;
+
+    // Solicitar ao usuário que informe o caractere que deseja contar
+    cout << "Informe o caractere que deseja contar: ";
+    cin >> caractere;
+
+    ifstream arquivo(nomeArquivo.c_str());
+    if (arquivo.is_open()) {
+        string linha;
+        while (getline(arquivo, linha)) {
+            int quantidade = contarCaractere(linha, caractere);
+            cout << "Na linha: \"" << linha << "\", o caractere '" << caractere
+                 << "' ocorre " << quantidade << " vezes." << endl;
+        }
+        arquivo.close();
+    } else {
+        cerr << "Erro ao abrir o arquivo " << nomeArquivo << endl;
+    }
+
+    return 0;
+}
+
+//QUESTÃO 3
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <limits>
+
+using namespace std;
+
+int main() {
+    ifstream aAltura("altura.txt");
+    ifstream aPeso("peso.txt");
+
+    if (!aAltura.is_open()) {
+        cerr << "Não foi possível abrir o arquivo: altura.txt" << endl;
+        return 1;
+    }
+    if (!aPeso.is_open()) {
+        cerr << "Não foi possível abrir o arquivo: peso.txt" << endl;
+        return 1;
+    }
+
+    string cAltura, cPeso;
+    double altura, peso;
+    double maiorA = numeric_limits<double>::min();
+    double maiorP = numeric_limits<double>::min();
+    string pessoaMaiorA, pessoaMaiorP;
+
+    while (getline(aAltura, cAltura) && (aAltura >> altura)) {
+        aAltura.ignore(numeric_limits<streamsize>::max(), '\n'); 
+        if (altura > maiorA) {
+            maiorA = altura;
+            pessoaMaiorA = cAltura;
+        }
+    }
+
+    while (getline(aPeso, cPeso) && (aPeso >> peso)) {
+        aPeso.ignore(numeric_limits<streamsize>::max(), '\n'); 
+        if (peso > maiorP) {
+            maiorP = peso;
+            pessoaMaiorP = cPeso;
+        }
+    }
+
+    cout << "Pessoa com maior altura: " << pessoaMaiorA << " com " << maiorA << " metros" << endl;
+    cout << "Pessoa com maior peso: " << pessoaMaiorP << " com " << maiorP << " kg" << endl;
+
+    aAltura.close();
+    aPeso.close();
+
+    return 0;
+}
+
+//QUESTÃO 4
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+using namespace std;
+
+// Função para verificar se um arquivo existe
+bool arquivoExiste(const string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo.c_str());
+    return arquivo.good();
+}
+
+// Função para converter string para int (C++98 friendly)
+int stringToInt(const string& str) {
+    istringstream iss(str);
+    int valor;
+    iss >> valor;
+    return valor;
+}
+
+// Função para cadastrar um novo aluno
+void cadastrarAluno() {
+    string nomeAluno, matricula;
+
+    cout << "Digite o nome do aluno: ";
+    cin >> nomeAluno;
+    cout << "Digite a matricula do aluno: ";
+    cin >> matricula;
+
+    // Verifica se o aluno já está cadastrado
+    string nomeArquivo = nomeAluno + ".txt";
+    if (arquivoExiste(nomeArquivo)) {
+        cout << "Aluno ja cadastrado." << endl;
+        return;
+    }
+
+    // Cria o arquivo do aluno e salva a matrícula
+    ofstream arquivo(nomeArquivo.c_str());
+    if (arquivo.is_open()) {
+        arquivo << matricula << endl;
+        arquivo.close();
+        cout << "Aluno cadastrado com sucesso." << endl;
+    } else {
+        cerr << "Erro ao criar o arquivo do aluno." << endl;
+    }
+}
+
+// Função para adicionar nota de um aluno
+void adicionarNota() {
+    string nomeAluno, notaStr;
+
+    cout << "Digite o nome do aluno: ";
+    cin >> nomeAluno;
+
+    // Verifica se o aluno está cadastrado
+    string nomeArquivo = nomeAluno + ".txt";
+    if (!arquivoExiste(nomeArquivo)) {
+        cout << "Aluno nao cadastrado." << endl;
+        return;
+    }
+
+    cout << "Digite a nota do aluno: ";
+    cin >> notaStr;
+    
+    // Abre o arquivo do aluno para adicionar a nota
+    ofstream arquivo(nomeArquivo.c_str(), ios_base::app); // Abre o arquivo em modo append
+    if (arquivo.is_open()) {
+        arquivo << notaStr << endl;
+        arquivo.close();
+        cout << "Nota adicionada com sucesso." << endl;
+    } else {
+        cerr << "Erro ao abrir o arquivo do aluno para adicionar a nota." << endl;
+    }
+}
+
+// Função para calcular a média de um aluno
+void calcularMedia() {
+    string nomeAluno;
+
+    cout << "Digite o nome do aluno: ";
+    cin >> nomeAluno;
+
+    // Verifica se o aluno está cadastrado
+    string nomeArquivo = nomeAluno + ".txt";
+    if (!arquivoExiste(nomeArquivo)) {
+        cout << "Aluno nao cadastrado." << endl;
+        return;
+    }
+
+    // Abre o arquivo do aluno para calcular a média
+    ifstream arquivo(nomeArquivo.c_str());
+    if (arquivo.is_open()) {
+        string matriculaStr;
+        getline(arquivo, matriculaStr); // Lê a matrícula (a primeira linha, que não usaremos aqui)
+
+        double nota;
+        double somaNotas = 0.0;
+        int contador = 0;
+        while (arquivo >> nota) {
+            somaNotas += nota; // Aqui corrigido para somar a nota lida do arquivo
+            contador++;
+        }
+        arquivo.close();
+
+        if (contador > 0) {
+            double media = somaNotas / contador;
+            cout << "Media do aluno " << nomeAluno << ": " << media << endl;
+        } else {
+            cout << "Nenhuma nota registrada para o aluno." << endl;
+        }
+    } else {
+        cerr << "Erro ao abrir o arquivo do aluno para calcular a media." << endl;
+    }
+}
+
+// Função principal que exibe o menu e controla o fluxo do programa
+int main() {
+    int opcao;
+
+    do {
+        cout << endl;
+        cout << "Menu:" << endl;
+        cout << "1. Cadastrar aluno" << endl;
+        cout << "2. Adicionar nota de um aluno" << endl;
+        cout << "3. Calcular media de um aluno" << endl;
+        cout << "4. Fechar o programa" << endl;
+        cout << "Escolha uma opcao: ";
+        cin >> opcao;
+
+        switch (opcao) {
+            case 1:
+                cadastrarAluno();
+                break;
+            case 2:
+                adicionarNota();
+                break;
+            case 3:
+                calcularMedia();
+                break;
+            case 4:
+                cout << "Fechando o programa..." << endl;
+                break;
+            default:
+                cout << "Opcao invalida. Tente novamente." << endl;
+        }
+    } while (opcao != 4);
+
+    return 0;
+}
